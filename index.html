@@ -1,0 +1,316 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bridge – Clickable MVP Prototype</title>
+  <style>
+    :root{
+      --bg:#f7f8fa; --card:#ffffff; --text:#111; --muted:#666; --accent:#4f46e5;
+      --ok:#16a34a; --warn:#ca8a04; --bad:#dc2626;
+    }
+    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    body{margin:0;background:var(--bg);color:var(--text)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:#fff;position:sticky;top:0;z-index:5;box-shadow:0 1px 8px rgba(0,0,0,.05)}
+    .brand{font-weight:800;letter-spacing:.2px}
+    .nav a{margin:0 8px;padding:8px 12px;border-radius:10px;text-decoration:none;color:#111}
+    .nav a.active, .nav a:hover{background:#eef; color:#1f2; }
+    .container{max-width:1100px;margin:24px auto;padding:0 16px}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+    .card{background:var(--card);border-radius:16px;padding:16px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+    .title{font-weight:700;margin:0 0 8px}
+    .muted{color:var(--muted);font-size:14px}
+    .kpi{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid #eee;border-radius:12px}
+    .badge{padding:4px 10px;border-radius:999px;font-size:12px}
+    .ok{background:#e9fbe9;color:#0a7a2a}
+    .warn{background:#fff7db;color:#8a6a00}
+    .bad{background:#ffe6e6;color:#8a1717}
+    table{width:100%;border-collapse:separate;border-spacing:0 8px}
+    th,td{padding:10px 12px;text-align:left;background:#fff}
+    th{font-size:12px;color:#555}
+    tr{box-shadow:0 1px 6px rgba(0,0,0,.04)}
+    .btn{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn-outline{border:1px solid #ddd;background:#fff;color:#333}
+    /* Tooltip coachmarks */
+    .coach{position:fixed;background:#111;color:#fff;padding:12px 14px;border-radius:12px;max-width:280px;font-size:14px;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+    .coach .next{display:inline-block;margin-top:8px;background:#fff;color:#111;padding:6px 10px;border-radius:8px;cursor:pointer}
+    .coach .skip{margin-left:8px;opacity:.8;cursor:pointer}
+    .hidden{display:none}
+    @media (max-width:800px){
+      .grid{grid-template-columns:repeat(6,1fr)}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">Bridge</div>
+    <nav class="nav">
+      <a href="#/home" id="nav-home">Home</a>
+      <a href="#/dealflow" id="nav-dealflow">DealFlow</a>
+      <a href="#/moneymap" id="nav-moneymap">MoneyMap</a>
+      <a href="#/teamboard" id="nav-teamboard">TeamBoard</a>
+    </nav>
+    <button id="startTour" class="btn-outline">Start Tour</button>
+  </header>
+
+  <main class="container">
+    <!-- HOME -->
+    <section id="home" class="view">
+      <h2 class="title">Home Dashboard</h2>
+      <p class="muted">Snapshot of your business this month.</p>
+      <div class="grid">
+        <div class="card" style="grid-column: span 4">
+          <div class="kpi"><div>Total Income (Aug)</div><strong>$42,800</strong></div>
+          <div class="kpi" style="margin-top:10px"><div>Forecast (Sept)</div><strong>$45,600</strong></div>
+        </div>
+        <div class="card" style="grid-column: span 4">
+          <div class="kpi"><div>Active Deals</div><span class="badge ok">3</span></div>
+          <div style="margin-top:12px">
+            <button class="btn" id="toDealflow">View Deals</button>
+          </div>
+        </div>
+        <div class="card" style="grid-column: span 4">
+          <div class="kpi"><div>Team Status</div><span class="badge ok">2 Active</span></div>
+          <div style="margin-top:12px">
+            <button class="btn-outline" id="toTeam">Open TeamBoard</button>
+          </div>
+        </div>
+
+        <div class="card" style="grid-column: span 12">
+          <h3 class="title">Recent Activity</h3>
+          <table>
+            <thead><tr><th>Date</th><th>Event</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Aug 20</td><td>Canva – Invoice sent</td><td><span class="badge warn">Pending Payment</span></td></tr>
+              <tr><td>Aug 18</td><td>Adobe – Contract signed</td><td><span class="badge ok">In Progress</span></td></tr>
+              <tr><td>Aug 17</td><td>Notion – Final video delivered</td><td><span class="badge ok">Completed</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEALFLOW -->
+    <section id="dealflow" class="view hidden">
+      <div class="grid">
+        <div class="card" style="grid-column: span 8">
+          <h2 class="title">DealFlow</h2>
+          <p class="muted">Track brand deals, deliverables & payment status.</p>
+          <table>
+            <thead><tr><th>Brand</th><th>Deal</th><th>Value</th><th>Due</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Adobe</td><td>Premiere Pro Series</td><td>$5,000</td><td>Aug 28</td><td><span class="badge ok">In Progress</span></td></tr>
+              <tr><td>Canva</td><td>Design Sprint</td><td>$3,500</td><td>Aug 25</td><td><span class="badge warn">Pending Payment</span></td></tr>
+              <tr><td>Notion</td><td>Workspace Tour</td><td>$6,200</td><td>—</td><td><span class="badge ok">Completed</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="grid-column: span 4">
+          <h3 class="title">Quick Actions</h3>
+          <button class="btn" id="newDealBtn">New Deal</button>
+          <button class="btn-outline" style="margin-left:8px" id="toMoney">Go to MoneyMap</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MONEYMAP -->
+    <section id="moneymap" class="view hidden">
+      <h2 class="title">MoneyMap</h2>
+      <p class="muted">All revenue sources in one place.</p>
+      <div class="grid">
+        <div class="card" style="grid-column: span 6">
+          <h3 class="title">Income by Source (Aug)</h3>
+          <table>
+            <thead><tr><th>Source</th><th>Amount</th></tr></thead>
+            <tbody>
+              <tr><td>YouTube</td><td>$18,000</td></tr>
+              <tr><td>Brand Deals</td><td>$21,000</td></tr>
+              <tr><td>Affiliate</td><td>$3,800</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="grid-column: span 6">
+          <h3 class="title">Upcoming Payouts</h3>
+          <table>
+            <thead><tr><th>Date</th><th>Source</th><th>Amount</th></tr></thead>
+            <tbody>
+              <tr><td>Aug 25</td><td>Canva (Invoice)</td><td>$3,500</td></tr>
+              <tr><td>Aug 28</td><td>YouTube AdSense</td><td>$9,200</td></tr>
+            </tbody>
+          </table>
+          <button class="btn-outline" id="toHome">Back to Home</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEAMBOARD -->
+    <section id="teamboard" class="view hidden">
+      <h2 class="title">TeamBoard</h2>
+      <p class="muted">Manage your editor, VA, and designer from one place.</p>
+      <div class="grid">
+        <div class="card" style="grid-column: span 4">
+          <h3 class="title">Chris – Editor</h3>
+          <p class="muted">Status: Active</p>
+          <button class="btn-outline">Assign Task</button>
+        </div>
+        <div class="card" style="grid-column: span 4">
+          <h3 class="title">Jamie – VA</h3>
+          <p class="muted">Status: Pending</p>
+          <button class="btn-outline">Assign Task</button>
+        </div>
+        <div class="card" style="grid-column: span 4">
+          <h3 class="title">Priya – Designer</h3>
+          <p class="muted">Status: Active</p>
+          <button class="btn-outline">Assign Task</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW DEAL WIZARD -->
+    <section id="wizard1" class="view hidden">
+      <h2 class="title">New Deal – Step 1: Brand & Basics</h2>
+      <div class="card">
+        <div class="grid">
+          <div class="card" style="grid-column: span 12">
+            <label>Brand Name *</label><br><input id="brand" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:10px">
+          </div>
+          <div class="card" style="grid-column: span 12">
+            <label>Deal Title *</label><br><input id="title" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:10px">
+          </div>
+          <div class="card" style="grid-column: span 6">
+            <label>Channel</label><br>
+            <select id="channel" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:10px">
+              <option>YouTube</option><option>Instagram</option><option>TikTok</option><option>Newsletter</option><option>Other</option>
+            </select>
+          </div>
+          <div class="card" style="grid-column: span 6">
+            <label>Start Date</label><br><input type="date" id="start" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:10px">
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <button class="btn" id="toW2">Next</button>
+          <button class="btn-outline" onclick="route('dealflow')">Cancel</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="wizard2" class="view hidden">
+      <h2 class="title">New Deal – Step 2: Deliverables & Timeline</h2>
+      <div class="card">
+        <div class="grid">
+          <div class="card" style="grid-column: span 12">
+            <label>Deliverable</label><br>
+            <input placeholder="e.g., YouTube Video x2 (Aug 28)" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:10px">
+          </div>
+          <div class="card" style="grid-column: span 12">
+            <label>Milestones</label><br>
+            <input placeholder="First Draft: Aug 22 • Final: Aug 30" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:10px">
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <button class="btn" id="toW3">Next</button>
+          <button class="btn-outline" onclick="route('wizard1')">Back</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="wizard3" class="view hidden">
+      <h2 class="title">New Deal – Step 3: Money & Terms</h2>
+      <div class="card">
+        <div class="grid">
+          <div class="card" style="grid-column: span 6">
+            <label>Deal Value (USD)</label><br>
+            <input placeholder="$5,000" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:10px">
+          </div>
+          <div class="card" style="grid-column: span 6">
+            <label>Payment Terms</label><br>
+            <select style="width:100%;padding:10px;border:1px solid #ddd;border-radius:10px">
+              <option>Net-15</option><option selected>Net-30</option><option>Net-45</option>
+            </select>
+          </div>
+          <div class="card" style="grid-column: span 6">
+            <label>Usage Rights</label><br>
+            <select style="width:100%;padding:10px;border:1px solid #ddd;border-radius:10px">
+              <option>Organic</option><option>Paid Boost</option><option>Whitelisting</option>
+            </select>
+          </div>
+          <div class="card" style="grid-column: span 6">
+            <label>Exclusivity</label><br>
+            <select style="width:100%;padding:10px;border:1px solid #ddd;border-radius:10px">
+              <option>No</option><option>Yes</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <button class="btn" id="confirmDeal">Confirm & Create</button>
+          <button class="btn-outline" onclick="route('wizard2')">Back</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="confirm" class="view hidden">
+      <div class="card">
+        <h2 class="title">Deal created ✅</h2>
+        <p class="muted">Your deal has been added to DealFlow.</p>
+        <button class="btn" onclick="route('dealflow')">Open DealFlow</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Coachmarks -->
+  <div id="coach1" class="coach hidden" style="top:86px;left:24px">
+    Welcome to <b>Bridge</b> — your back office for creator ops.
+    <div><span class="next" onclick="nextCoach(1)">Next</span><span class="skip" onclick="endCoach()">Skip</span></div>
+  </div>
+  <div id="coach2" class="coach hidden" style="top:140px;right:24px">
+    Use the <b>navigation</b> to jump between DealFlow, MoneyMap, and TeamBoard.
+    <div><span class="next" onclick="nextCoach(2)">Next</span><span class="skip" onclick="endCoach()">Skip</span></div>
+  </div>
+  <div id="coach3" class="coach hidden" style="bottom:24px;left:24px">
+    Try creating a brand partnership via <b>New Deal</b> in DealFlow.
+    <div><span class="next" onclick="endCoach()">Done</span><span class="skip" onclick="endCoach()">Skip</span></div>
+  </div>
+
+  <script>
+    const views = ["home","dealflow","moneymap","teamboard","wizard1","wizard2","wizard3","confirm"];
+    function route(view){
+      views.forEach(v => document.getElementById(v).classList.add("hidden"));
+      document.getElementById(view).classList.remove("hidden");
+      // set active nav
+      document.querySelectorAll(".nav a").forEach(a => a.classList.remove("active"));
+      const id = "nav-" + (view.includes("wizard")||view==="confirm" ? "dealflow" : view);
+      const el = document.getElementById(id); if(el) el.classList.add("active");
+      location.hash = "#/"+view;
+    }
+    window.addEventListener("hashchange", () => {
+      const v = location.hash.replace("#/","") || "home";
+      if(views.includes(v)) route(v);
+    });
+    // Buttons
+    document.getElementById("toDealflow").onclick = () => route("dealflow");
+    document.getElementById("toTeam").onclick = () => route("teamboard");
+    document.getElementById("toMoney").onclick = () => route("moneymap");
+    document.getElementById("toHome").onclick = () => route("home");
+    document.getElementById("newDealBtn").onclick = () => route("wizard1");
+    document.getElementById("toW2").onclick = () => route("wizard2");
+    document.getElementById("toW3").onclick = () => route("wizard3");
+    document.getElementById("confirmDeal").onclick = () => route("confirm");
+
+    // Coachmarks
+    const startTour = document.getElementById("startTour");
+    startTour.onclick = () => { document.getElementById("coach1").classList.remove("hidden"); }
+    function nextCoach(n){
+      document.getElementById("coach"+n).classList.add("hidden");
+      document.getElementById("coach"+(n+1)).classList.remove("hidden");
+    }
+    function endCoach(){
+      ["coach1","coach2","coach3"].forEach(id => document.getElementById(id).classList.add("hidden"));
+    }
+
+    // Initialize
+    const initView = (location.hash && location.hash.replace("#/","")) || "home";
+    route(initView);
+  </script>
+</body>
+</html>
